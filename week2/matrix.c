@@ -41,11 +41,12 @@ matrix_del(matrix m)
 matrix
 matrix_dot(matrix m1, matrix m2)
 {
-    if (m1.cols != m2.rows) {
-        printf("Dimension error %d!=%d\n", m1.cols, m2.rows);
-        exit(1);
+    if (DEBUG) {
+        if (m1.cols != m2.rows) {
+            printf("Dimension error %d!=%d\n", m1.cols, m2.rows);
+            exit(1);
+        }
     }
-
     matrix ret = matrix_new(m1.rows, m2.cols);
     for (int row = 0; row < m1.rows; row++) {
         for (int col = 0; col < m2.cols; col++) {
@@ -67,7 +68,7 @@ matrix_print(matrix m)
     for (int i = 0; i < m.rows; i++) {
         printf("[ ");
         for (int j = 0; j < m.cols; j++) {
-            printf("%.2f", matrix_get(m, i, j));
+            printf("%.4e", matrix_get(m, i, j));
             printf(" ");
         }
         printf("]\n");
@@ -78,9 +79,11 @@ matrix_print(matrix m)
 inline double
 matrix_get(matrix m, int row, int col)
 {
-    if (!(row >= 0 && col >= 0 && row < m.rows && col < m.cols)) {
-        printf("Index out of bounds (%d,%d)\n", row, col);
-        exit(1);
+    if (DEBUG) {
+        if (!(row >= 0 && col >= 0 && row < m.rows && col < m.cols)) {
+            printf("matrix get: Index out of bounds (%d,%d)\n", row, col);
+            exit(1);
+        }
     }
     return m.buf[row * m.cols + col];
 }
@@ -88,20 +91,22 @@ matrix_get(matrix m, int row, int col)
 inline void
 matrix_set(matrix m, int row, int col, double val)
 {
-    if (!(row >= 0 && col >= 0 && row < m.rows && col < m.cols)) {
-        printf("Index out of bounds (%d,%d)\n", row, col);
-        exit(1);
-    }
+    if (DEBUG)
+        if (!(row >= 0 && col >= 0 && row < m.rows && col < m.cols)) {
+            printf("matrix set: Index out of bounds (%d,%d)\n", row, col);
+            exit(1);
+        }
     m.buf[row * m.cols + col] = val;
 }
 
 matrix
 matrix_get_row(matrix m, int row)
 {
-    if (row < 0 || row >= m.rows) {
-        printf("Row %d out of bounds\n", row);
-        exit(1);
-    }
+    if (DEBUG)
+        if (row < 0 || row >= m.rows) {
+            printf("Row %d out of bounds\n", row);
+            exit(1);
+        }
     return (matrix){.buf = m.buf + row * m.cols, .rows = 1, .cols = m.cols};
 }
 
@@ -130,10 +135,11 @@ matrix_scalar_multiply_ip(matrix m, double x)
 void
 matrix_add_ip(matrix m1, matrix m2)
 {
-    if (m1.rows != m2.rows || m1.cols != m2.cols) {
-        printf("Add dimension mismatched\n");
-        exit(1);
-    }
+    if (DEBUG)
+        if (m1.rows != m2.rows || m1.cols != m2.cols) {
+            printf("Add dimension mismatched\n");
+            exit(1);
+        }
 
     for (int i = 0; i < m1.rows; i++) {
         for (int j = 0; j < m1.cols; j++) {
@@ -147,10 +153,11 @@ matrix_add_ip(matrix m1, matrix m2)
 void
 matrix_add_ip_T(matrix m1, matrix m2)
 {
-    if (m1.rows != m2.cols || m1.cols != m2.rows) {
-        printf("Transpose add dimension mismatched\n");
-        exit(1);
-    }
+    if (DEBUG)
+        if (m1.rows != m2.cols || m1.cols != m2.rows) {
+            printf("Transpose add dimension mismatched\n");
+            exit(1);
+        }
 
     for (int i = 0; i < m1.rows; i++) {
         for (int j = 0; j < m1.cols; j++) {
@@ -159,4 +166,10 @@ matrix_add_ip_T(matrix m1, matrix m2)
             matrix_set(m1, i, j, x1 + x2);
         }
     }
+}
+
+void
+matrix_print_dims(matrix m)
+{
+    printf("(%d,%d)\n", m.rows, m.cols);
 }

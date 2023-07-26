@@ -11,14 +11,16 @@ LIB	=
 LIBFLAGS =
 
 # select the compiler and flags you can over-ride on command line e.g. make DEBUG= 
-CC      = gcc
-DEBUG	= -ggdb
+CC      = cc
+DEBUG	= -g
 CSTD	=
 WARN	= -Wall -Wextra -Werror
+OPT     = -Ofast
 CDEFS	=
-CFLAGS	= -I. $(DEBUG) $(WARN) $(CSTD) $(CDEFS)
+CFLAGS	= -I. $(WARN) $(CSTD) $(CDEFS) $(OPT) # $(DEBUG) 
 AR      = ar
 ARFLAGS = -rvs 
+
 
 # some flags to use with assembler tools
 ASLIST  = -Wa,-adhln
