@@ -15,9 +15,9 @@ CC      = cc
 DEBUG	= -g
 CSTD	=
 WARN	= -Wall -Wextra -Werror
-OPT     = -Ofast
+OPT     = -O2
 CDEFS	=
-CFLAGS	= -I. $(WARN) $(CSTD) $(CDEFS) $(OPT) # $(DEBUG) 
+CFLAGS	= -I. $(WARN) $(CSTD) $(CDEFS) $(OPT)
 AR      = ar
 ARFLAGS = -rvs 
 

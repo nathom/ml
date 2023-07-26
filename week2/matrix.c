@@ -38,8 +38,8 @@ matrix_del(matrix m)
 }
 
 // O(n^3)
-matrix
-matrix_dot(matrix m1, matrix m2)
+void
+matrix_dot(matrix out, const matrix m1, const matrix m2)
 {
     if (DEBUG) {
         if (m1.cols != m2.rows) {
@@ -47,7 +47,6 @@ matrix_dot(matrix m1, matrix m2)
             exit(1);
         }
     }
-    matrix ret = matrix_new(m1.rows, m2.cols);
     for (int row = 0; row < m1.rows; row++) {
         for (int col = 0; col < m2.cols; col++) {
             double sum = 0.0;
@@ -56,10 +55,9 @@ matrix_dot(matrix m1, matrix m2)
                 double x2 = matrix_get(m2, k, col);
                 sum += x1 * x2;
             }
-            matrix_set(ret, row, col, sum);
+            matrix_set(out, row, col, sum);
         }
     }
-    return ret;
 }
 
 void
@@ -76,29 +74,6 @@ matrix_print(matrix m)
     printf("\n");
 }
 
-inline double
-matrix_get(matrix m, int row, int col)
-{
-    if (DEBUG) {
-        if (!(row >= 0 && col >= 0 && row < m.rows && col < m.cols)) {
-            printf("matrix get: Index out of bounds (%d,%d)\n", row, col);
-            exit(1);
-        }
-    }
-    return m.buf[row * m.cols + col];
-}
-
-inline void
-matrix_set(matrix m, int row, int col, double val)
-{
-    if (DEBUG)
-        if (!(row >= 0 && col >= 0 && row < m.rows && col < m.cols)) {
-            printf("matrix set: Index out of bounds (%d,%d)\n", row, col);
-            exit(1);
-        }
-    m.buf[row * m.cols + col] = val;
-}
-
 matrix
 matrix_get_row(matrix m, int row)
 {
@@ -110,16 +85,14 @@ matrix_get_row(matrix m, int row)
     return (matrix){.buf = m.buf + row * m.cols, .rows = 1, .cols = m.cols};
 }
 
-matrix
-matrix_scalar_multiply(matrix m, double x)
+void
+matrix_scalar_multiply(matrix out, const matrix m, double x)
 {
-    matrix ret = matrix_new(m.rows, m.cols);
     for (int i = 0; i < m.rows; i++) {
         for (int j = 0; j < m.cols; j++) {
-            matrix_set(ret, i, j, matrix_get(m, i, j) * x);
+            matrix_set(out, i, j, matrix_get(m, i, j) * x);
         }
     }
-    return ret;
 }
 
 void
