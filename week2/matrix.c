@@ -1,5 +1,6 @@
 #include "matrix.h"
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -145,4 +146,81 @@ void
 matrix_print_dims(matrix m)
 {
     printf("(%d,%d)\n", m.rows, m.cols);
+}
+
+void
+matrix_sub(matrix out, const matrix m1, const matrix m2)
+{
+    if (DEBUG)
+        if (m1.rows != m2.rows || m1.cols != m2.cols || out.rows != m1.rows ||
+            out.cols != m1.cols) {
+            printf("Sub dimension mismatched\n");
+            exit(1);
+        }
+
+    for (int i = 0; i < m1.rows; i++) {
+        for (int j = 0; j < m1.cols; j++) {
+            double x1 = matrix_get(m1, i, j);
+            double x2 = matrix_get(m2, i, j);
+            matrix_set(out, i, j, x1 - x2);
+        }
+    }
+}
+
+void
+matrix_square_ip(matrix m)
+{
+    for (int i = 0; i < m.rows; i++) {
+        for (int j = 0; j < m.cols; j++) {
+            double x = matrix_get(m, i, j);
+            matrix_set(m, i, j, x * x);
+        }
+    }
+}
+
+void
+matrix_sqrt_ip(matrix m)
+{
+    for (int i = 0; i < m.rows; i++) {
+        for (int j = 0; j < m.cols; j++) {
+            double x = matrix_get(m, i, j);
+            matrix_set(m, i, j, sqrt(x));
+        }
+    }
+}
+
+void
+matrix_sub_ip(matrix m1, matrix m2)
+{
+    if (DEBUG)
+        if (m1.rows != m2.rows || m1.cols != m2.cols) {
+            printf("Sub dimension mismatched\n");
+            exit(1);
+        }
+
+    for (int i = 0; i < m1.rows; i++) {
+        for (int j = 0; j < m1.cols; j++) {
+            double x1 = matrix_get(m1, i, j);
+            double x2 = matrix_get(m2, i, j);
+            matrix_set(m1, i, j, x1 - x2);
+        }
+    }
+}
+
+void
+matrix_div_ip(matrix m1, const matrix m2)
+{
+    if (DEBUG)
+        if (m1.rows != m2.rows || m1.cols != m2.cols) {
+            printf("Div dimension mismatched\n");
+            exit(1);
+        }
+
+    for (int i = 0; i < m1.rows; i++) {
+        for (int j = 0; j < m1.cols; j++) {
+            double x1 = matrix_get(m1, i, j);
+            double x2 = matrix_get(m2, i, j);
+            matrix_set(m1, i, j, x1 / x2);
+        }
+    }
 }

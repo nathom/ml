@@ -13,6 +13,7 @@ void compute_gradient(struct grad *g, const matrix x_train, const matrix y, cons
                       const double b);
 void gradient_descent_ip(matrix x_train, matrix y_train, matrix w, double *b, int num_iterations,
                          double alpha);
+void z_score_normalize(matrix x_train);
 
 #define NUM_INPUT_VARS 4
 #define NUM_SAMPLES 3
@@ -37,8 +38,8 @@ main()
     double w_buf[NUM_INPUT_VARS] = {0.0, 0.0, 0.0, 0.0};
     matrix w = matrix_from_buf(w_buf, NUM_INPUT_VARS, 1);
 
-    printf("Sample prediction: %f\n", predict(matrix_get_row(x_train, 0), optimal_w, optimal_b));
     printf("Cost at optimal w: %.10e\n", compute_cost(x_train, y_train, optimal_w, optimal_b));
+
     matrix dj_dw;
     ZEROS(dj_dw, 1, NUM_INPUT_VARS);
     struct grad g = {.dj_dw = dj_dw, .dj_db = 0.0};
@@ -49,9 +50,12 @@ main()
     double cost = compute_cost(x_train, y_train, w, b);
     printf("Initial Cost: %f\n", cost);
 
-    const int num_iterations = 1e8;
+    const int num_iterations = 5e7;
     // step size
-    const double alpha = 5e-7;
+    const double alpha = 8e-7;
+
+    // normalize input data, comment out and see the difference!
+    z_score_normalize(x_train);
 
     // run gradient descent algorithm
     gradient_descent_ip(x_train, y_train, w, &b, num_iterations, alpha);
@@ -136,4 +140,37 @@ compute_gradient(struct grad *g, const matrix x_train, const matrix y, const mat
     }
     g->dj_db /= x_train.rows;
     matrix_scalar_multiply_ip(g->dj_dw, 1.0 / x_train.rows);
+}
+
+// normalize the input data using z-score
+void
+z_score_normalize(matrix x_train)
+{
+    // calculate mean and standard deviation
+    matrix mean;
+    ZEROS(mean, 1, NUM_INPUT_VARS);
+    matrix stdev;
+    ZEROS(stdev, 1, NUM_INPUT_VARS);
+
+    for (int i = 0; i < NUM_SAMPLES; i++) {
+        matrix_add_ip(mean, matrix_get_row(x_train, i));
+    }
+    matrix_scalar_multiply_ip(mean, 1.0 / NUM_SAMPLES);
+
+    matrix buf;
+    ZEROS(buf, 1, NUM_INPUT_VARS);
+    for (int i = 0; i < NUM_SAMPLES; i++) {
+        matrix row = matrix_get_row(x_train, i);
+        matrix_sub(buf, mean, row);
+        matrix_square_ip(buf);
+        matrix_add_ip(stdev, buf);
+    }
+    matrix_sqrt_ip(stdev);
+
+    // normalize
+    for (int i = 0; i < NUM_SAMPLES; i++) {
+        matrix row = matrix_get_row(x_train, i);
+        matrix_sub_ip(row, mean);
+        matrix_div_ip(row, stdev);
+    }
 }

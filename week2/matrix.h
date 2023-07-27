@@ -21,9 +21,9 @@
 #define DEBUG !NDEBUG
 #endif
 
-#define ZEROS(m, rows, cols)           \
-    double _buf[rows][cols] = {{0.0}}; \
-    m = matrix_from_buf((double *)_buf, rows, cols)
+#define ZEROS(m, rows, cols)               \
+    double _buf_##m[rows][cols] = {{0.0}}; \
+    m = matrix_from_buf((double *)_buf_##m, rows, cols)
 
 typedef struct {
     double *buf;
@@ -217,5 +217,12 @@ void matrix_add_ip_T(matrix m1, matrix m2);
  *   m: The matrix whose dimensions are to be printed.
  */
 void matrix_print_dims(matrix m);
+
+void matrix_sub(matrix out, const matrix m1, const matrix m2);
+
+void matrix_square_ip(matrix m);
+void matrix_sqrt_ip(matrix m);
+void matrix_sub_ip(matrix m1, const matrix m2);
+void matrix_div_ip(matrix m1, const matrix m2);
 
 #endif  // MATRIX_H
