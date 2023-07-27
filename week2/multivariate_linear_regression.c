@@ -50,11 +50,13 @@ main()
     double cost = compute_cost(x_train, y_train, w, b);
     printf("Initial Cost: %f\n", cost);
 
-    const int num_iterations = 5e7;
+    const int num_iterations = 50;
     // step size
-    const double alpha = 8e-7;
+    const double alpha = 1.0;
 
     // normalize input data, comment out and see the difference!
+    // Without this, an alpha < 5e-7 and ~1e7 iterations are required for
+    // it to converge
     z_score_normalize(x_train);
 
     // run gradient descent algorithm
@@ -64,12 +66,6 @@ main()
     printf("Final w:\n");
     matrix_print(w);
     printf("Final b: %f\n", b);
-
-    printf("Post training predictions:\n");
-    for (int i = 0; i < NUM_SAMPLES; i++) {
-        matrix row = matrix_get_row(x_train, i);
-        printf("Got %f, expected %f\n", predict(row, w, b), predict(row, optimal_w, optimal_b));
-    }
 }
 
 void
