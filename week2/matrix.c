@@ -44,7 +44,8 @@ matrix_dot(matrix out, const matrix m1, const matrix m2)
 {
     if (DEBUG) {
         if (m1.cols != m2.rows) {
-            printf("Dimension error %d!=%d\n", m1.cols, m2.rows);
+            printf("matrix dot: dimension error %d,%d not compat w/ %d,%d\n", m1.rows, m1.cols,
+                   m2.rows, m2.cols);
             exit(1);
         }
     }
@@ -111,7 +112,8 @@ matrix_add_ip(matrix m1, matrix m2)
 {
     if (DEBUG)
         if (m1.rows != m2.rows || m1.cols != m2.cols) {
-            printf("Add dimension mismatched\n");
+            printf("Add dimension mismatched (%d,%d) != (%d,%d)\n", m1.rows, m1.cols, m2.rows,
+                   m2.cols);
             exit(1);
         }
 

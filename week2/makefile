@@ -1,10 +1,11 @@
 # if you type 'make' without arguments, this is the default
-PROG = mlr
+PROG = mlr pr
 all: $(PROG)
 
 # associated object files 
-HEAD    = matrix.h
-OBJ     = multivariate_linear_regression.o matrix.o
+HEAD    = matrix.h multivariate_linear_regression.h
+OBJ     =  matrix.o multivariate_linear_regression.o
+CFILES  = matrix.c multivariate_linear_regression.c
 
 # special libraries
 LIB	=
@@ -30,23 +31,21 @@ ASFLAGS =
 DUMP   = objdump
 DFLAGS = -d
 
-$(OBJ):             $(HEAD)
+DEGREE = -DNUM_FEATURES=20
+
+mlr: mlr.c $(CFILES) $(HEAD)
+	$(CC) $(CFLAGS) mlr.c $(CFILES) -o $@ -DNUM_FEATURES=4 -DNUM_SAMPLES=3
+
+pr: polynomial_regression.c $(CFILES) $(HEAD)
+	$(CC) $(CFLAGS) polynomial_regression.c $(CFILES) -o $@ $(DEGREE) -DNUM_SAMPLES=1000
 
 # specify how to assemble a .S file
 %.o : %.S
 	$(CC) $(CFLAGS) $(ASFLAGS)  -c -o $@ $<
 
 # specify how to compile the target
-$(PROG):    $(OBJ) $(LIB)
-	$(CC) $(CFLAGS) $(OBJ) $(LIBFLAGS) -o $@
+# mlr: multivariate_linear_regression.o $(OBJ)
+# 	$(CC) $(CFLAGS) $^ $(LIBFLAGS) -o $@ -DNUM_FEATURES=4 -DNUM_SAMPLES=3
 
-.PHONY: clean
-
-# get an object dump
-dump:       $(PROG)
-	$(DUMP) $(DFLAGS) $^
-
-# remove binaries
-.PHONY: clean
 clean:
-	rm -f $(OBJ) $(PROG)
+	rm -f $(PROG) *.o
